@@ -1,4 +1,4 @@
-import { LEVELS, TOTAL_LEVELS, markCompleted } from '../levels.js';
+import { LEVELS, TOTAL_LEVELS, markCompleted, getBestMoves, saveBestMoves } from '../levels.js';
 
 const T_EMPTY = 0, T_FLOOR = 1, T_WALL = 2, T_GOAL = 3, DPAD = 120;
 
@@ -107,6 +107,10 @@ export default class GameScene extends Phaser.Scene {
     });
     this.movesTxt = this.add.text(16, 34, `MOVES  0`, {
       fontFamily: 'Space Grotesk', fontSize: '13px', color: '#a7a9be',
+    });
+    const best = getBestMoves(this.levelIndex);
+    this.bestTxt = this.add.text(200, 34, `BEST  ${best != null ? best : '—'}`, {
+      fontFamily: 'Space Grotesk', fontSize: '13px', color: '#504d78',
     });
 
     this._hudBtn(W - 165, 29, 62, 'UNDO',    '#a7a9be', () => this._undo());
@@ -317,6 +321,8 @@ export default class GameScene extends Phaser.Scene {
     if (this.crateSprites.every(c => this._onGoal(c.gx, c.gy))) {
       this.won = true;
       markCompleted(this.levelIndex);
+      this.prevBest   = getBestMoves(this.levelIndex);
+      this.isNewBest  = saveBestMoves(this.levelIndex, this.moves);
       window._audio?.playWin();
       this.time.delayedCall(550, () => this._winOverlay());
     }
@@ -334,7 +340,7 @@ export default class GameScene extends Phaser.Scene {
     this.tweens.add({ targets: dim, fillAlpha: 0.72, duration: 320 });
 
     // Panel
-    const pw = 370, ph = 240;
+    const pw = 370, ph = 272;
     const panel = this.add.graphics();
     panel.fillStyle(0x14132a, 0.97);
     panel.fillRoundedRect(cx - pw / 2, cy - ph / 2, pw, ph, 16);
@@ -345,37 +351,52 @@ export default class GameScene extends Phaser.Scene {
 
     const items = [];
 
-    items.push(this.add.text(cx, cy - 88, 'LEVEL  COMPLETE', {
+    items.push(this.add.text(cx, cy - 102, 'LEVEL  COMPLETE', {
       fontFamily: 'Space Grotesk', fontSize: '20px', fontStyle: 'bold', color: '#00e5ff',
     }).setOrigin(0.5).setAlpha(0));
 
-    items.push(this.add.text(cx, cy - 58, LEVELS[this.levelIndex].title, {
+    items.push(this.add.text(cx, cy - 72, LEVELS[this.levelIndex].title, {
       fontFamily: 'Space Grotesk', fontSize: '14px', color: '#504d78',
     }).setOrigin(0.5).setAlpha(0));
 
-    items.push(this.add.text(cx, cy - 14, `${this.moves}`, {
+    items.push(this.add.text(cx, cy - 26, `${this.moves}`, {
       fontFamily: 'Space Grotesk', fontSize: '46px', fontStyle: 'bold', color: '#f0eff4',
     }).setOrigin(0.5).setAlpha(0));
 
-    items.push(this.add.text(cx, cy + 28, 'moves', {
+    items.push(this.add.text(cx, cy + 18, 'moves', {
       fontFamily: 'Space Grotesk', fontSize: '14px', color: '#504d78',
     }).setOrigin(0.5).setAlpha(0));
+
+    // Record / best line
+    if (this.isNewBest && this.prevBest == null) {
+      items.push(this.add.text(cx, cy + 46, 'FIRST CLEAR!', {
+        fontFamily: 'Space Grotesk', fontSize: '13px', fontStyle: 'bold', color: '#ffcc44',
+      }).setOrigin(0.5).setAlpha(0));
+    } else if (this.isNewBest) {
+      items.push(this.add.text(cx, cy + 46, `★  NEW BEST!  (was ${this.prevBest})`, {
+        fontFamily: 'Space Grotesk', fontSize: '13px', fontStyle: 'bold', color: '#ffcc44',
+      }).setOrigin(0.5).setAlpha(0));
+    } else {
+      items.push(this.add.text(cx, cy + 46, `BEST  ${getBestMoves(this.levelIndex)}  moves`, {
+        fontFamily: 'Space Grotesk', fontSize: '13px', color: '#504d78',
+      }).setOrigin(0.5).setAlpha(0));
+    }
 
     this.tweens.add({ targets: items, alpha: 1, duration: 380, delay: 260 });
 
     const isLast = this.levelIndex >= TOTAL_LEVELS - 1;
 
     if (isLast) {
-      this._overlayBtn(cx, cy + 76, 210, '★  ALL DONE!  ★', '#ffcc44', 0xffaa00, () => {
+      this._overlayBtn(cx, cy + 90, 210, '★  ALL DONE!  ★', '#ffcc44', 0xffaa00, () => {
         this.scene.start('MenuScene');
       });
     } else {
-      this._overlayBtn(cx, cy + 76, 210, 'NEXT LEVEL  →', '#00e5ff', 0x00e5ff, () => {
+      this._overlayBtn(cx, cy + 90, 210, 'NEXT LEVEL  →', '#00e5ff', 0x00e5ff, () => {
         this.scene.start('GameScene', { levelIndex: this.levelIndex + 1 });
       });
     }
 
-    this._overlayBtn(cx, cy + 120, 210, 'SELECT LEVEL', '#a7a9be', 0x4040a0, () => {
+    this._overlayBtn(cx, cy + 134, 210, 'SELECT LEVEL', '#a7a9be', 0x4040a0, () => {
       this.scene.start('LevelSelectScene');
     });
   }

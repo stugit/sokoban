@@ -1052,4 +1052,20 @@ export function markCompleted(index) {
 export function resetProgress() {
   localStorage.removeItem('sokoban_reached');
   localStorage.removeItem('sokoban_completed');
+  localStorage.removeItem('sokoban_best');
+}
+
+export function getBestMoves(index) {
+  const d = JSON.parse(localStorage.getItem('sokoban_best') ?? '{}');
+  return d[index] ?? null;
+}
+
+export function saveBestMoves(index, moves) {
+  const d = JSON.parse(localStorage.getItem('sokoban_best') ?? '{}');
+  if (d[index] == null || moves < d[index]) {
+    d[index] = moves;
+    localStorage.setItem('sokoban_best', JSON.stringify(d));
+    return true;
+  }
+  return false;
 }
