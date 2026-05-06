@@ -9,170 +9,238 @@ export default class BootScene extends Phaser.Scene {
   _gen() {
     const T = 64;
 
-    // FLOOR
+    // FLOOR — inset tile with grout border
     {
       const ct = this.textures.createCanvas('floor', T, T);
       const c = ct.getContext();
-      c.fillStyle = '#1a1830';
+      c.fillStyle = '#12111e';
       c.fillRect(0, 0, T, T);
-      c.strokeStyle = '#141226';
+      c.fillStyle = '#181627';
+      c.fillRect(2, 2, T - 4, T - 4);
+      c.fillStyle = 'rgba(255,255,255,0.025)';
+      c.fillRect(2, 2, T - 4, 1);
+      c.fillRect(2, 2, 1, T - 4);
+      c.strokeStyle = '#0b0a17';
       c.lineWidth = 1;
       c.strokeRect(0.5, 0.5, T - 1, T - 1);
-      c.fillStyle = '#1e1c38';
-      for (const x of [2, T - 4]) for (const y of [2, T - 4]) c.fillRect(x, y, 2, 2);
+      c.fillStyle = '#1e1c36';
+      for (const [x, y] of [[3, 3], [T - 5, 3], [3, T - 5], [T - 5, T - 5]])
+        c.fillRect(x, y, 2, 2);
       ct.refresh();
     }
 
-    // WALL
+    // WALL — deep bevel with lit inner panel edges
     {
       const ct = this.textures.createCanvas('wall', T, T);
       const c = ct.getContext();
-      c.fillStyle = '#252342';
+      c.fillStyle = '#23213f';
       c.fillRect(0, 0, T, T);
-      c.fillStyle = '#3a3768';
-      c.fillRect(0, 0, T, 6);
+      c.fillStyle = '#3d3a6e';
+      c.fillRect(0, 0, T, 5);
+      c.fillStyle = '#302d58';
+      c.fillRect(0, 5, T, 3);
       c.fillStyle = '#2e2b54';
-      c.fillRect(0, 0, 5, T);
-      c.fillStyle = '#141228';
-      c.fillRect(0, T - 5, T, 5);
-      c.fillStyle = '#191730';
-      c.fillRect(T - 5, 0, 5, T);
-      c.fillStyle = '#201e3c';
+      c.fillRect(0, 0, 4, T);
+      c.fillStyle = '#100e24';
+      c.fillRect(0, T - 4, T, 4);
+      c.fillStyle = '#171528';
+      c.fillRect(T - 4, 0, 4, T);
+      c.fillStyle = '#1a1832';
       c.fillRect(7, 7, T - 14, T - 14);
-      c.fillStyle = 'rgba(255,255,255,0.04)';
-      c.fillRect(8, 8, T - 16, 3);
-      c.fillRect(8, 8, 3, T - 16);
+      c.fillStyle = 'rgba(255,255,255,0.06)';
+      c.fillRect(8, 8, T - 16, 2);
+      c.fillRect(8, 8, 2, T - 16);
+      c.fillStyle = 'rgba(0,0,0,0.35)';
+      c.fillRect(8, T - 10, T - 16, 2);
+      c.fillRect(T - 10, 8, 2, T - 16);
       ct.refresh();
     }
 
-    // CRATE
+    // CRATE — amber with wood grain and outer rim glow
     {
       const ct = this.textures.createCanvas('crate', T, T);
       const c = ct.getContext();
       const g = c.createLinearGradient(0, 0, T, T);
-      g.addColorStop(0, '#cc8c2a');
-      g.addColorStop(1, '#8a5510');
+      g.addColorStop(0, '#d4942e');
+      g.addColorStop(0.5, '#b07520');
+      g.addColorStop(1, '#7a4808');
       c.fillStyle = g;
       c.fillRect(0, 0, T, T);
-      c.fillStyle = 'rgba(255,218,110,0.3)';
+      for (let i = 6; i < T - 4; i += 5) {
+        c.fillStyle = `rgba(0,0,0,${0.06 + (i % 10 < 5 ? 0.06 : 0)})`;
+        c.fillRect(4, i, T - 8, 1);
+      }
+      c.fillStyle = 'rgba(255,218,110,0.42)';
       c.fillRect(0, 0, T, 5);
       c.fillRect(0, 0, 5, T);
-      c.fillStyle = 'rgba(0,0,0,0.38)';
+      c.fillStyle = 'rgba(0,0,0,0.45)';
       c.fillRect(0, T - 5, T, 5);
       c.fillRect(T - 5, 0, 5, T);
-      c.strokeStyle = 'rgba(0,0,0,0.22)';
+      c.strokeStyle = 'rgba(0,0,0,0.25)';
       c.lineWidth = 1.5;
       c.strokeRect(9, 9, T - 18, T - 18);
-      c.strokeStyle = 'rgba(0,0,0,0.17)';
+      c.strokeStyle = 'rgba(0,0,0,0.18)';
+      c.lineWidth = 1;
       c.beginPath();
-      c.moveTo(12, 12); c.lineTo(T - 12, T - 12);
-      c.moveTo(T - 12, 12); c.lineTo(12, T - 12);
+      c.moveTo(13, 13); c.lineTo(T - 13, T - 13);
+      c.moveTo(T - 13, 13); c.lineTo(13, T - 13);
       c.stroke();
+      c.strokeStyle = 'rgba(255,200,80,0.2)';
+      c.lineWidth = 2;
+      c.strokeRect(1.5, 1.5, T - 3, T - 3);
       ct.refresh();
     }
 
-    // CRATE ON GOAL
+    // CRATE ON GOAL — teal with grain, bright rim and radial glow
     {
       const ct = this.textures.createCanvas('crate_goal', T, T);
       const c = ct.getContext();
       const g = c.createLinearGradient(0, 0, T, T);
-      g.addColorStop(0, '#1ea882');
-      g.addColorStop(1, '#0c6b52');
+      g.addColorStop(0, '#22bc92');
+      g.addColorStop(0.5, '#13946e');
+      g.addColorStop(1, '#0a6040');
       c.fillStyle = g;
       c.fillRect(0, 0, T, T);
-      c.fillStyle = 'rgba(140,255,210,0.3)';
+      for (let i = 6; i < T - 4; i += 5) {
+        c.fillStyle = `rgba(0,0,0,${0.06 + (i % 10 < 5 ? 0.06 : 0)})`;
+        c.fillRect(4, i, T - 8, 1);
+      }
+      c.fillStyle = 'rgba(140,255,210,0.42)';
       c.fillRect(0, 0, T, 5);
       c.fillRect(0, 0, 5, T);
-      c.fillStyle = 'rgba(0,0,0,0.38)';
+      c.fillStyle = 'rgba(0,0,0,0.42)';
       c.fillRect(0, T - 5, T, 5);
       c.fillRect(T - 5, 0, 5, T);
-      c.strokeStyle = 'rgba(0,255,180,0.28)';
+      c.strokeStyle = 'rgba(0,255,180,0.5)';
       c.lineWidth = 1.5;
       c.strokeRect(9, 9, T - 18, T - 18);
+      c.strokeStyle = 'rgba(0,255,180,0.32)';
+      c.lineWidth = 1;
       c.beginPath();
-      c.moveTo(12, 12); c.lineTo(T - 12, T - 12);
-      c.moveTo(T - 12, 12); c.lineTo(12, T - 12);
+      c.moveTo(13, 13); c.lineTo(T - 13, T - 13);
+      c.moveTo(T - 13, 13); c.lineTo(13, T - 13);
       c.stroke();
-      const gl = c.createRadialGradient(T / 2, T / 2, 0, T / 2, T / 2, T / 2);
-      gl.addColorStop(0, 'rgba(0,255,180,0.18)');
+      const gl = c.createRadialGradient(T / 2, T / 2, 0, T / 2, T / 2, T * 0.52);
+      gl.addColorStop(0, 'rgba(0,255,180,0.28)');
+      gl.addColorStop(0.5, 'rgba(0,255,180,0.1)');
       gl.addColorStop(1, 'rgba(0,255,180,0)');
       c.fillStyle = gl;
       c.fillRect(0, 0, T, T);
+      c.strokeStyle = 'rgba(0,255,180,0.38)';
+      c.lineWidth = 2;
+      c.strokeRect(1.5, 1.5, T - 3, T - 3);
       ct.refresh();
     }
 
-    // GOAL
+    // GOAL — dual-diamond with outer halo ring
     {
       const ct = this.textures.createCanvas('goal', T, T);
       const c = ct.getContext();
-      c.fillStyle = '#1a1830';
+      c.fillStyle = '#12111e';
       c.fillRect(0, 0, T, T);
-      c.strokeStyle = '#141226';
-      c.lineWidth = 1;
-      c.strokeRect(0.5, 0.5, T - 1, T - 1);
-      const cx = T / 2, cy = T / 2, r = 15;
-      const gl = c.createRadialGradient(cx, cy, 0, cx, cy, r + 6);
-      gl.addColorStop(0, 'rgba(0,229,255,0.16)');
+      c.fillStyle = '#181627';
+      c.fillRect(2, 2, T - 4, T - 4);
+      const cx = T / 2, cy = T / 2;
+      c.beginPath();
+      c.arc(cx, cy, 22, 0, Math.PI * 2);
+      c.strokeStyle = 'rgba(0,229,255,0.1)';
+      c.lineWidth = 7;
+      c.stroke();
+      const gl = c.createRadialGradient(cx, cy, 0, cx, cy, 20);
+      gl.addColorStop(0, 'rgba(0,229,255,0.22)');
+      gl.addColorStop(0.6, 'rgba(0,229,255,0.07)');
       gl.addColorStop(1, 'rgba(0,229,255,0)');
       c.fillStyle = gl;
       c.fillRect(0, 0, T, T);
+      const diamond = (r, alpha, lw) => {
+        c.beginPath();
+        c.moveTo(cx, cy - r); c.lineTo(cx + r, cy);
+        c.lineTo(cx, cy + r); c.lineTo(cx - r, cy);
+        c.closePath();
+        c.strokeStyle = `rgba(0,229,255,${alpha})`;
+        c.lineWidth = lw;
+        c.stroke();
+      };
+      diamond(17, 0.88, 1.8);
+      diamond(9, 0.35, 1);
+      c.fillStyle = 'rgba(0,229,255,0.92)';
       c.beginPath();
-      c.moveTo(cx, cy - r);
-      c.lineTo(cx + r, cy);
-      c.lineTo(cx, cy + r);
-      c.lineTo(cx - r, cy);
-      c.closePath();
-      c.strokeStyle = 'rgba(0,229,255,0.75)';
-      c.lineWidth = 1.8;
-      c.stroke();
-      c.fillStyle = 'rgba(0,229,255,0.55)';
+      c.arc(cx, cy, 4, 0, Math.PI * 2);
+      c.fill();
+      c.fillStyle = 'rgba(200,248,255,0.95)';
       c.beginPath();
-      c.arc(cx, cy, 3.5, 0, Math.PI * 2);
+      c.arc(cx, cy, 2, 0, Math.PI * 2);
       c.fill();
       ct.refresh();
     }
 
-    // PLAYER
+    // PLAYER — body glow, glowing eyes, tech stripe
     {
       const ct = this.textures.createCanvas('player', T, T);
       const c = ct.getContext();
       const mx = T / 2;
-      const bg = c.createRadialGradient(mx - 3, T / 2 + 2, 2, mx, T / 2 + 6, T * 0.3);
-      bg.addColorStop(0, '#55e8ff');
-      bg.addColorStop(1, '#0099bb');
-      c.fillStyle = bg;
+      const halo = c.createRadialGradient(mx, T / 2 + 6, 0, mx, T / 2 + 6, 28);
+      halo.addColorStop(0, 'rgba(0,229,255,0.18)');
+      halo.addColorStop(1, 'rgba(0,229,255,0)');
+      c.fillStyle = halo;
+      c.fillRect(0, 0, T, T);
+      const bodyGrad = c.createRadialGradient(mx - 3, T / 2 + 4, 2, mx, T / 2 + 7, 21);
+      bodyGrad.addColorStop(0, '#55e8ff');
+      bodyGrad.addColorStop(1, '#0090b8');
+      c.fillStyle = bodyGrad;
       c.beginPath();
-      c.arc(mx, T / 2 + 6, T * 0.26, 0, Math.PI * 2);
+      c.arc(mx, T / 2 + 7, 20, 0, Math.PI * 2);
       c.fill();
-      const hg = c.createRadialGradient(mx - 3, T / 2 - 12, 2, mx, T / 2 - 8, T * 0.18);
-      hg.addColorStop(0, '#88f0ff');
-      hg.addColorStop(1, '#00bbd8');
-      c.fillStyle = hg;
+      c.strokeStyle = 'rgba(0,200,255,0.28)';
+      c.lineWidth = 1.5;
       c.beginPath();
-      c.arc(mx, T / 2 - 8, T * 0.17, 0, Math.PI * 2);
+      c.moveTo(mx - 15, T / 2 + 7);
+      c.lineTo(mx + 15, T / 2 + 7);
+      c.stroke();
+      c.strokeStyle = 'rgba(0,229,255,0.28)';
+      c.lineWidth = 2;
+      c.beginPath();
+      c.arc(mx, T / 2 + 7, 20, 0, Math.PI * 2);
+      c.stroke();
+      const headGrad = c.createRadialGradient(mx - 3, T / 2 - 10, 2, mx, T / 2 - 7, 13);
+      headGrad.addColorStop(0, '#88f0ff');
+      headGrad.addColorStop(1, '#00b8d4');
+      c.fillStyle = headGrad;
+      c.beginPath();
+      c.arc(mx, T / 2 - 7, 13, 0, Math.PI * 2);
       c.fill();
-      c.fillStyle = '#091520';
+      c.strokeStyle = 'rgba(0,229,255,0.28)';
+      c.lineWidth = 1.5;
       c.beginPath();
-      c.arc(mx - 4.5, T / 2 - 10, 2.2, 0, Math.PI * 2);
-      c.arc(mx + 4.5, T / 2 - 10, 2.2, 0, Math.PI * 2);
+      c.arc(mx, T / 2 - 7, 13, 0, Math.PI * 2);
+      c.stroke();
+      c.fillStyle = '#060e18';
+      c.beginPath();
+      c.arc(mx - 4.5, T / 2 - 9, 2.5, 0, Math.PI * 2);
+      c.arc(mx + 4.5, T / 2 - 9, 2.5, 0, Math.PI * 2);
       c.fill();
-      c.fillStyle = 'rgba(255,255,255,0.5)';
+      c.fillStyle = 'rgba(0,229,255,0.92)';
       c.beginPath();
-      c.arc(mx - 6, T / 2 - 14, 3, 0, Math.PI * 2);
+      c.arc(mx - 4.5, T / 2 - 9, 1.2, 0, Math.PI * 2);
+      c.arc(mx + 4.5, T / 2 - 9, 1.2, 0, Math.PI * 2);
+      c.fill();
+      c.fillStyle = 'rgba(255,255,255,0.55)';
+      c.beginPath();
+      c.arc(mx - 6, T / 2 - 14, 3.5, 0, Math.PI * 2);
       c.fill();
       ct.refresh();
     }
 
-    // PARTICLE
+    // PARTICLE — slightly larger for more dramatic bursts
     {
-      const ct = this.textures.createCanvas('particle', 12, 12);
+      const ct = this.textures.createCanvas('particle', 16, 16);
       const c = ct.getContext();
-      const g = c.createRadialGradient(6, 6, 0, 6, 6, 6);
+      const g = c.createRadialGradient(8, 8, 0, 8, 8, 8);
       g.addColorStop(0, 'rgba(0,229,255,1)');
-      g.addColorStop(0.5, 'rgba(0,229,255,0.7)');
+      g.addColorStop(0.4, 'rgba(0,229,255,0.8)');
       g.addColorStop(1, 'rgba(0,229,255,0)');
       c.fillStyle = g;
-      c.fillRect(0, 0, 12, 12);
+      c.fillRect(0, 0, 16, 16);
       ct.refresh();
     }
 
